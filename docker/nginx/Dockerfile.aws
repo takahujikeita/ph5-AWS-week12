@@ -1,4 +1,4 @@
 FROM nginx
 
 COPY ./docker/nginx/default.conf.aws /etc/nginx/conf.d/default.conf
-COPY ./src /work/web
+COPY ./backend /work/web

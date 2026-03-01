@@ -20,7 +20,7 @@ ENV PATH $PATH:/composer/vendor/bin
 WORKDIR /work/web
 
 # 資材をコピー
-COPY ./src /work/web
+COPY ./backend /work/web
 RUN mv /work/web/.env.aws /work/web/.env
 
 # Laravel環境準備のコマンド

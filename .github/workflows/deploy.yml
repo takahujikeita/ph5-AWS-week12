@@ -1,0 +1,47 @@
+name: Deploy AWS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ROLE_TO_ASSUME: arn:aws:iam::592992680708:role/GtihubActions
+  FRONT_BUCKET_NAME: ph5aws-takahujikeita-silent-web
+  CLOUDFRONT_ID: E2NV5SH6GUW8D8
+
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: github-actions-${{ github.run_id }}
+          aws-region: ap-northeast-1
+      
+      - name: Get AWS Account
+        run: aws sts get-caller-identity
+      
+      - name: Build
+        run: |
+          cd front
+          cp .env.aws .env
+          rm .env.dev
+          yarn install
+          yarn build
+      
+      - name: Deploy
+        run: |
+          aws s3 sync front/build/ s3://${{ env.FRONT_BUCKET_NAME }}/ --delete --exact-timestamps
+          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_ID }} --paths "/*"
