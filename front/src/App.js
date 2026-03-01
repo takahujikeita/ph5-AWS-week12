@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div>
-      <h1>User List</h1>
+      <h1>User List GithubActions test</h1>
       <ul>
         {users.map((user) => (
           <li>
